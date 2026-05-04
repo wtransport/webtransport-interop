@@ -1,0 +1,58 @@
+# WebTransport Interop Feature Proposal GitHub Issue Form
+
+name: "Matrix Extension Proposal"
+description: "Submit a proposal for a new test Scenario or Execution Endpoint."
+labels: [ "enhancement", "triage" ]
+body:
+  - type: "markdown"
+    attributes:
+      value: |
+        Technical proposal for expanding the interoperability matrix.
+
+  - type: "dropdown"
+    id: "extension-type"
+    attributes:
+      label: "Extension Type"
+      description: "Target component of the registry architecture."
+      options:
+        - "Endpoint (Client/Server)"
+        - "Scenario (Test Workload)"
+        - "Core Harness Infrastructure"
+    validations:
+      required: true
+
+  - type: "textarea"
+    id: "motivation"
+    attributes:
+      label: "Motivation"
+      description: "Contextual justification for the extension."
+    validations:
+      required: true
+
+  - type: "textarea"
+    id: "architecture"
+    attributes:
+      label: "Architecture & Capabilities"
+      description: "Implementation details, base class inheritance, and required
+        capability negotiation."
+    validations:
+      required: true
+
+  - type: "input"
+    id: "reference"
+    attributes:
+      label: "References"
+      description: "Citations of relevant IETF specifications or endpoint documentation."
+      placeholder: "e.g., RFC 9297, Section 2"
+    validations:
+      required: false
+
+  - type: "checkboxes"
+    id: "checklist"
+    attributes:
+      label: "Checklist"
+      options:
+        - label: "Checked existing issues for duplicates."
+          required: true
+        - label: "Willing to submit a Pull Request."
+          required: false

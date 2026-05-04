@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WTransport Interoperability Matrix</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <script src="assets/matrix.js" defer></script>
+  </head>
+  <body>
+    <div class="logo">
+      <a href="https://wtransport.org">
+        <img src="assets/favicon.svg" alt="WTransport Logo" width="64" />
+      </a>
+    </div>
+
+    <h1 class="title">WTransport Interoperability Matrix</h1>
+
+    <div class="tech-credit">
+      Powered by
+      <a
+        href="https://github.com/wtransport/pywebtransport"
+        target="_blank"
+        rel="noopener noreferrer"
+        >PyWebTransport</a
+      >
+      <span class="version-tag" id="lib-version"></span>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="meta-container" id="report-meta"></div>
+
+    <div class="endpoints-wrapper">
+      <div class="endpoints-header">
+        <div class="header-title">Client Interoperability</div>
+        <div class="baseline-info">
+          Baseline Server: WTransport Interoperability Service
+        </div>
+      </div>
+      <div id="client-rows"></div>
+    </div>
+
+    <div class="endpoints-wrapper">
+      <div class="endpoints-header">
+        <div class="header-title">Server Interoperability</div>
+        <div class="baseline-info">Baseline Client: PyWebTransport</div>
+      </div>
+      <div id="server-rows"></div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="https://wtransport.org" class="footer-link">WTransport</a>
+        <a href="https://interop.wtransport.org" class="footer-link"
+          >Interop Service</a
+        >
+        <a href="https://matrix.wtransport.org" class="footer-link"
+          >Interop Matrix</a
+        >
+        <a href="https://status.wtransport.org/" class="footer-link"
+          >Service Availability</a
+        >
+        <a
+          href="https://github.com/wtransport/webtransport-interop"
+          class="footer-link"
+          target="_blank"
+          >Source Repository</a
+        >
+        <a href="mailto:admin@wtransport.org" class="footer-link"
+          >Administrative Contact</a
+        >
+      </div>
+      <div>Copyright &copy; 2025-2026 The WTransport Authors</div>
+    </footer>
+  </body>
+</html>

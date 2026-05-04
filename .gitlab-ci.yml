@@ -1,0 +1,73 @@
+# WebTransport Interop CI/CD Pipeline
+
+stages:
+  - lint
+  - deploy
+
+default:
+  tags:
+    - wtransport
+
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_NO_COLOR: "1"
+  PIP_ROOT_USER_ACTION: "ignore"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+lint:
+  stage: lint
+  image: python:3.12-slim-bookworm
+  cache:
+    paths:
+      - .cache/pip
+  before_script:
+    - python -m pip install --upgrade pip
+    - pip install -r dev-requirements.txt
+    - pip install -e .
+  script:
+    - isort --check-only src scripts
+    - black --check src scripts
+    - flake8 src scripts
+    - mypy src scripts
+  rules:
+    - if: "$CI_COMMIT_BRANCH == \"dev\" || $CI_COMMIT_BRANCH == \"main\""
+    - when: never
+
+deploy-github:
+  stage: deploy
+  image: python:3.12-slim-bookworm
+  variables:
+    GIT_DEPTH: 0
+  cache: []
+  before_script:
+    - apt-get update && apt-get install -y ca-certificates git gnupg
+    - cp "$INTERNAL_CA_CERT" /usr/local/share/ca-certificates/internal_ca.crt
+    - update-ca-certificates
+    - export GPG_TTY=$(tty)
+    - gpg --batch --import "$GPG_PRIVATE_KEY"
+    - "git config user.signingkey $(gpg --list-secret-keys --with-colons | grep
+      \"^sec:\" | cut -d: -f5 | head -n1)"
+    - git config commit.gpgsign true
+  script:
+    - VERSION=$(python -c "import tomllib;
+      print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+    - |
+      if git ls-remote --tags origin | grep -q "refs/tags/v$VERSION"; then
+        echo "Version v$VERSION already released - skipping"
+        exit 0
+      fi
+    - git config user.name "WTransport Bot"
+    - git config user.email "251935624+wtransport-bot@users.noreply.github.com"
+    - git tag -s -m "Release v$VERSION" "v$VERSION"
+    - git push
+      "https://oauth2:$GITLAB_DEPLOY_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"
+      "v$VERSION"
+    - git push
+      "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git"
+      $CI_COMMIT_SHA:refs/heads/$CI_COMMIT_BRANCH
+    - git push
+      "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git"
+      --tags
+  rules:
+    - if: "$CI_COMMIT_BRANCH == \"main\""
+    - when: never

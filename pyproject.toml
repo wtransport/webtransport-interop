@@ -1,0 +1,79 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling>=1.29.0,<2.0.0"]
+
+[project]
+name = "webtransport-interop"
+version = "0.1.0"
+description = "An automated interoperability and conformance harness for WebTransport."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.12"
+authors = [{ name = "The WTransport Authors", email = "admin@wtransport.org" }]
+keywords = [
+    "conformance",
+    "http3",
+    "interoperability",
+    "networking",
+    "protocol",
+    "quic",
+    "testing",
+    "webtransport",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Communications",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Testing",
+    "Topic :: System :: Networking",
+    "Typing :: Typed",
+]
+dependencies = [
+    "docker>=7.1.0,<8.0.0",
+    "playwright>=1.59.0,<2.0.0",
+    "pywebtransport>=0.17.0,<0.18.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=26.3.1,<27.0.0",
+    "flake8>=7.3.0,<8.0.0",
+    "isort>=8.0.1,<9.0.0",
+    "mypy>=1.20.1,<2.0.0",
+    "types-docker>=7.1.0.20260409,<8.0.0",
+]
+
+[project.urls]
+Changelog = "https://github.com/wtransport/webtransport-interop/blob/main/CHANGELOG.md"
+Funding = "https://opencollective.com/wtransport"
+Homepage = "https://github.com/wtransport/webtransport-interop"
+Issues = "https://github.com/wtransport/webtransport-interop/issues"
+Repository = "https://github.com/wtransport/webtransport-interop.git"
+
+[tool.black]
+line-length = 120
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+known_first_party = ["webtransport_interop"]
+
+[tool.mypy]
+mypy_path = "src"
+python_version = "3.12"
+show_error_codes = true
+strict = true
+warn_no_return = true
+warn_unreachable = true

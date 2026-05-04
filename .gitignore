@@ -1,0 +1,49 @@
+# Documentation
+docs/_build/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.sublime-project
+*.sublime-workspace
+
+# Reports
+*_result.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.dll
+*.dylib
+*.py[cod]
+*.pyd
+*.so
+
+# SSL/TLS certificates
+*.crt
+*.key
+*.p12
+*.pem
+
+# Testing
+.benchmarks/
+.cache/
+.coverage*
+.htmlcov/
+.pytest_cache/
+.tox/
+
+# Type checking
+.mypy_cache/
+
+# Virtual environments
+.venv*/
+venv*/
