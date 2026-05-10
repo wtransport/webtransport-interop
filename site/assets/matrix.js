@@ -76,12 +76,14 @@ async function loadMatrix() {
       document.getElementById("lib-version").textContent = "unknown";
     }
 
+    document.getElementById("harness-version").textContent =
+      `v${data.meta.version}`;
+
     const d = new Date(data.meta.timestamp * 1000);
     const timeStr = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")} ${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")} UTC`;
 
     document.getElementById("report-meta").innerHTML = `
       <div class="meta-pill">Protocol: <strong>${data.meta.protocol}</strong></div>
-      <div class="meta-pill">Harness: <strong>v${data.meta.version}</strong></div>
       <div class="meta-pill">Generated: <strong>${timeStr}</strong></div>
     `;
 
@@ -114,7 +116,7 @@ async function loadMatrix() {
   } catch (err) {
     document.getElementById("report-meta").innerHTML = `
       <div class="meta-pill" style="color: var(--text-tertiary)">
-        Status: <strong>Unavailable</strong>
+        Status: <strong>unavailable</strong>
       </div>`;
   }
 }

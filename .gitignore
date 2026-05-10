@@ -1,6 +1,3 @@
-# Documentation
-docs/_build/
-
 # Environment
 .env
 .env.*

@@ -4,12 +4,12 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-    types: [ opened, synchronize, reopened ]
+    branches: [main]
+    types: [opened, synchronize, reopened]
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "42 10 * * *"
 
 permissions:
   contents: read

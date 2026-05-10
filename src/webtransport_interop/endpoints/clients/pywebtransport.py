@@ -102,7 +102,7 @@ class PyWebTransportClient(BaseEndpoint):
         try:
             async with self._connect(url=url):
                 pass
-        except (ConnectionError, ClientError, SessionError) as e:
+        except (ClientError, ConnectionError, SessionError) as e:
             if "0x10b" in str(e).lower() or "400" in str(e):
                 return
         raise RuntimeError("Server accepted invalid version 99")
@@ -113,7 +113,7 @@ class PyWebTransportClient(BaseEndpoint):
         try:
             async with self._connect(url=url):
                 pass
-        except (ConnectionError, ClientError, SessionError) as e:
+        except (ClientError, ConnectionError, SessionError) as e:
             if "0x10b" in str(e).lower() or "400" in str(e):
                 return
         raise RuntimeError("Server accepted invalid count 999999")
@@ -124,7 +124,7 @@ class PyWebTransportClient(BaseEndpoint):
         try:
             async with self._connect(url=url):
                 pass
-        except (ConnectionError, ClientError, SessionError) as e:
+        except (ClientError, ConnectionError, SessionError) as e:
             if "0x10b" in str(e).lower() or "400" in str(e):
                 return
         raise RuntimeError("Server accepted invalid baton value 0")

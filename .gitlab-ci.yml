@@ -30,7 +30,7 @@ lint:
     - flake8 src scripts
     - mypy src scripts
   rules:
-    - if: "$CI_COMMIT_BRANCH == \"dev\" || $CI_COMMIT_BRANCH == \"main\""
+    - if: '$CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"'
     - when: never
 
 deploy-github:
@@ -45,29 +45,22 @@ deploy-github:
     - update-ca-certificates
     - export GPG_TTY=$(tty)
     - gpg --batch --import "$GPG_PRIVATE_KEY"
-    - "git config user.signingkey $(gpg --list-secret-keys --with-colons | grep
-      \"^sec:\" | cut -d: -f5 | head -n1)"
+    - 'git config user.signingkey $(gpg --list-secret-keys --with-colons | grep "^sec:" | cut -d: -f5 | head -n1)'
     - git config commit.gpgsign true
   script:
-    - VERSION=$(python -c "import tomllib;
-      print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+    - VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+    - REMOTE_TAGS=$(git ls-remote --tags origin) || exit 1
     - |
-      if git ls-remote --tags origin | grep -q "refs/tags/v$VERSION"; then
+      if echo "$REMOTE_TAGS" | grep -q "refs/tags/v$VERSION"; then
         echo "Version v$VERSION already released - skipping"
         exit 0
       fi
     - git config user.name "WTransport Bot"
     - git config user.email "251935624+wtransport-bot@users.noreply.github.com"
     - git tag -s -m "Release v$VERSION" "v$VERSION"
-    - git push
-      "https://oauth2:$GITLAB_DEPLOY_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git"
-      "v$VERSION"
-    - git push
-      "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git"
-      $CI_COMMIT_SHA:refs/heads/$CI_COMMIT_BRANCH
-    - git push
-      "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git"
-      --tags
+    - git push "https://oauth2:$GITLAB_DEPLOY_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git" "v$VERSION"
+    - git push "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git" $CI_COMMIT_SHA:refs/heads/$CI_COMMIT_BRANCH
+    - git push "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git" --tags
   rules:
-    - if: "$CI_COMMIT_BRANCH == \"main\""
+    - if: '$CI_COMMIT_BRANCH == "main"'
     - when: never
