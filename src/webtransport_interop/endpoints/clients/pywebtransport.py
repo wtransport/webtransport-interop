@@ -76,7 +76,7 @@ class PyWebTransportClient(BaseEndpoint):
         handler = getattr(self, method_name, None)
 
         if not handler:
-            error_msg = f"Unsupported scenario: {name}"
+            error_msg = f"unsupported scenario: {name}"
             self._logs.append(error_msg)
             return ExecutionResult(completed=False, error=error_msg)
 
@@ -84,7 +84,7 @@ class PyWebTransportClient(BaseEndpoint):
             typed_handler = cast(Callable[[], Coroutine[Any, Any, ExecutionResult]], handler)
             return await typed_handler()
         except Exception as e:
-            error_msg = f"Client execution crashed: {e}"
+            error_msg = f"client execution crashed: {e}"
             self._logs.append(error_msg)
             return ExecutionResult(completed=False, error=error_msg)
 
@@ -105,7 +105,7 @@ class PyWebTransportClient(BaseEndpoint):
         except (ClientError, ConnectionError, SessionError) as e:
             if "0x10b" in str(e).lower() or "400" in str(e):
                 return
-        raise RuntimeError("Server accepted invalid version 99")
+        raise RuntimeError("server accepted invalid version 99")
 
     async def _baton_test_02_invalid_count(self) -> None:
         """Verify server rejects excessive baton count."""
@@ -116,7 +116,7 @@ class PyWebTransportClient(BaseEndpoint):
         except (ClientError, ConnectionError, SessionError) as e:
             if "0x10b" in str(e).lower() or "400" in str(e):
                 return
-        raise RuntimeError("Server accepted invalid count 999999")
+        raise RuntimeError("server accepted invalid count 999999")
 
     async def _baton_test_03_invalid_baton(self) -> None:
         """Verify server rejects invalid baton value."""
@@ -127,7 +127,7 @@ class PyWebTransportClient(BaseEndpoint):
         except (ClientError, ConnectionError, SessionError) as e:
             if "0x10b" in str(e).lower() or "400" in str(e):
                 return
-        raise RuntimeError("Server accepted invalid baton value 0")
+        raise RuntimeError("server accepted invalid baton value 0")
 
     async def _baton_test_04_server_initiates_uni_stream(self) -> None:
         """Verify server initiates the protocol with unidirectional streams."""
@@ -154,7 +154,7 @@ class PyWebTransportClient(BaseEndpoint):
                 async with asyncio.timeout(delay=5.0):
                     await event.wait()
             except asyncio.TimeoutError:
-                raise RuntimeError("Server did not initiate unidirectional stream") from None
+                raise RuntimeError("server did not initiate unidirectional stream") from None
             finally:
                 task.cancel()
 
@@ -191,7 +191,7 @@ class PyWebTransportClient(BaseEndpoint):
                 async with asyncio.timeout(delay=5.0):
                     await reply_received.wait()
             except asyncio.TimeoutError:
-                raise RuntimeError("Server did not reply on the same bidirectional stream") from None
+                raise RuntimeError("server did not reply on the same bidirectional stream") from None
             finally:
                 task.cancel()
 
@@ -243,8 +243,8 @@ class PyWebTransportClient(BaseEndpoint):
                     await server_uni_opened.wait()
             except asyncio.TimeoutError:
                 if not server_bidi_opened.is_set():
-                    raise RuntimeError("Server did not open Bidi stream in response to Uni") from None
-                raise RuntimeError("Server did not open Uni stream in response to Bidi (Self)") from None
+                    raise RuntimeError("server did not open bidi stream in response to uni") from None
+                raise RuntimeError("server did not open uni stream in response to bidi") from None
             finally:
                 task_bidi.cancel()
                 task_uni.cancel()
@@ -267,7 +267,7 @@ class PyWebTransportClient(BaseEndpoint):
                 async with asyncio.timeout(delay=5.0):
                     await dgram_received.wait()
             except asyncio.TimeoutError:
-                raise RuntimeError("Server did not send datagram for baton % 7 == 0") from None
+                raise RuntimeError("server did not send datagram for baton % 7 == 0") from None
 
     async def _baton_test_08_random_padding(self) -> None:
         """Verify server adds padding when baton value modulo 5 is 0."""
@@ -298,7 +298,7 @@ class PyWebTransportClient(BaseEndpoint):
                 async with asyncio.timeout(delay=5.0):
                     await padding_verified.wait()
             except asyncio.TimeoutError:
-                raise RuntimeError("Server did not send valid padding for baton % 5 == 0") from None
+                raise RuntimeError("server did not send valid padding for baton % 5 == 0") from None
             finally:
                 task.cancel()
 
@@ -323,10 +323,10 @@ class PyWebTransportClient(BaseEndpoint):
                 async with asyncio.timeout(delay=5.0):
                     await close_event.wait()
             except asyncio.TimeoutError:
-                raise RuntimeError("Server did not close session on malformed baton") from None
+                raise RuntimeError("server did not close session on malformed baton") from None
 
             if received_error != _ERR_BRUH:
-                raise RuntimeError(f"Expected ERR_BRUH (0x02), got {received_error}")
+                raise RuntimeError(f"expected ERR_BRUH (0x02), got {received_error}")
 
     async def _baton_test_10_unexpected_value(self) -> None:
         """Verify server closes session with ERR_SUS on unexpected baton value."""
@@ -358,7 +358,7 @@ class PyWebTransportClient(BaseEndpoint):
                 async with asyncio.timeout(delay=5.0):
                     await close_event.wait()
             except asyncio.TimeoutError:
-                raise RuntimeError("Server did not close session on unexpected baton value") from None
+                raise RuntimeError("server did not close session on unexpected baton value") from None
             finally:
                 task.cancel()
 
@@ -410,7 +410,7 @@ class PyWebTransportClient(BaseEndpoint):
             try:
                 async with asyncio.timeout(delay=2.0):
                     await session_closed.wait()
-                raise RuntimeError("Server closed session on I_LIED reset (Should ignore)")
+                raise RuntimeError("server closed session on I_LIED reset (should ignore)")
             except asyncio.TimeoutError:
                 pass
 
@@ -445,12 +445,12 @@ class PyWebTransportClient(BaseEndpoint):
                 async with asyncio.timeout(delay=5.0):
                     await close_event.wait()
             except asyncio.TimeoutError:
-                raise RuntimeError("Server did not close session gracefully") from None
+                raise RuntimeError("server did not close session gracefully") from None
             finally:
                 task.cancel()
 
             if close_code != 0:
-                raise RuntimeError(f"Expected NO_ERROR (0), got {close_code}")
+                raise RuntimeError(f"expected NO_ERROR (0), got {close_code}")
 
     def _build_baton_url(self, **kwargs: Any) -> str:
         """Construct the connection URL with query parameters."""
@@ -513,7 +513,7 @@ class PyWebTransportClient(BaseEndpoint):
                 await stream.close()
 
                 if stream_response != stream_payload:
-                    raise RuntimeError(f"Stream Echo mismatch. Sent: {stream_payload!r}, Recv: {stream_response!r}")
+                    raise RuntimeError(f"stream echo mismatch: sent {stream_payload!r}, recv {stream_response!r}")
 
                 datagram_payload = b"Datagram Test"
                 loop = asyncio.get_running_loop()
@@ -531,14 +531,12 @@ class PyWebTransportClient(BaseEndpoint):
                     async with asyncio.timeout(delay=5.0):
                         datagram_response = await recv_future
                 except asyncio.TimeoutError:
-                    raise RuntimeError("Server did not echo datagram within timeout")
+                    raise RuntimeError("server did not echo datagram within timeout")
                 finally:
                     session.events.off(event_type=EventType.DATAGRAM_RECEIVED, handler=on_dgram)
 
                 if datagram_response != datagram_payload:
-                    raise RuntimeError(
-                        f"Datagram Echo mismatch. Sent: {datagram_payload!r}, Recv: {datagram_response!r}"
-                    )
+                    raise RuntimeError(f"datagram echo mismatch: sent {datagram_payload!r}, recv {datagram_response!r}")
 
         try:
             await self._execute_with_retry(test_func=_run_echo)
@@ -581,21 +579,21 @@ class _VarInt:
     def parse(*, data: bytes) -> tuple[int, int]:
         """Parse a QUIC variable-length integer from bytes."""
         if not data:
-            raise ValueError("Empty data")
+            raise ValueError("empty data")
         first = data[0]
         if first < 0x40:
             return first, 1
         elif first < 0x80:
             if len(data) < 2:
-                raise ValueError("Truncated VarInt")
+                raise ValueError("truncated varint")
             return struct.unpack("!H", bytes([first & 0x3F]) + data[1:2])[0], 2
         elif first < 0xC0:
             if len(data) < 4:
-                raise ValueError("Truncated VarInt")
+                raise ValueError("truncated varint")
             return struct.unpack("!L", bytes([first & 0x3F]) + data[1:4])[0], 4
         else:
             if len(data) < 8:
-                raise ValueError("Truncated VarInt")
+                raise ValueError("truncated varint")
             return struct.unpack("!Q", bytes([first & 0x3F]) + data[1:8])[0], 8
 
 

@@ -4,7 +4,7 @@ requires = ["hatchling>=1.29.0,<2.0.0"]
 
 [project]
 name = "webtransport-interop"
-version = "0.1.1"
+version = "0.2.0"
 description = "An automated interoperability and conformance harness for WebTransport."
 readme = "README.md"
 license = "Apache-2.0"
@@ -43,6 +43,7 @@ dependencies = [
     "docker>=7.1.0,<8.0.0",
     "playwright>=1.59.0,<2.0.0",
     "pywebtransport>=0.17.1,<0.18.0",
+    "selenium>=4.43.0,<5.0.0",
 ]
 
 [project.optional-dependencies]

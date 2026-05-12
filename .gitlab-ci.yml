@@ -40,9 +40,10 @@ deploy-github:
     GIT_DEPTH: 0
   cache: []
   before_script:
-    - apt-get update && apt-get install -y ca-certificates git gnupg
     - cp "$INTERNAL_CA_CERT" /usr/local/share/ca-certificates/internal_ca.crt
     - update-ca-certificates
+    - sed -i -e "s|http://deb.debian.org/debian-security|$APT_SECURITY_PROXY_URL|g" -e "s|http://deb.debian.org/debian|$APT_PROXY_URL|g" /etc/apt/sources.list.d/debian.sources
+    - apt-get update && apt-get install -y git gnupg
     - export GPG_TTY=$(tty)
     - gpg --batch --import "$GPG_PRIVATE_KEY"
     - 'git config user.signingkey $(gpg --list-secret-keys --with-colons | grep "^sec:" | cut -d: -f5 | head -n1)'

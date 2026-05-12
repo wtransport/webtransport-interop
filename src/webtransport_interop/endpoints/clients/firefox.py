@@ -1,25 +1,26 @@
-"""Edge client endpoint."""
+"""Firefox client endpoint."""
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Callable, Coroutine
 from typing import Any, cast
 
-from playwright.async_api import async_playwright
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 from webtransport_interop.endpoints.base_endpoint import BaseEndpoint
 from webtransport_interop.types import ExecutionResult, HarnessCapabilities, ProtocolCapabilities
 
 
-class EdgeClient(BaseEndpoint):
-    """Client adapter for Microsoft Edge."""
+class FirefoxClient(BaseEndpoint):
+    """Client adapter for Mozilla Firefox."""
 
     def __init__(self, *, target_url: str) -> None:
         """Initialize browser endpoint."""
         self._target_url = target_url
-        self._browser: Any = None
+        self._browser: webdriver.Firefox | None = None
         self._logs: list[str] = []
-        self._playwright: Any = None
 
     @property
     def harness_capabilities(self) -> HarnessCapabilities:
@@ -29,7 +30,7 @@ class EdgeClient(BaseEndpoint):
     @property
     def name(self) -> str:
         """Harness registration identity."""
-        return "edge"
+        return "firefox"
 
     @property
     def protocol_capabilities(self) -> ProtocolCapabilities:
@@ -39,7 +40,7 @@ class EdgeClient(BaseEndpoint):
     @property
     def version(self) -> str:
         """Implementation version identifier."""
-        return self._browser.version if self._browser else "unknown"
+        return str(self._browser.capabilities.get("browserVersion", "unknown")) if self._browser else "unknown"
 
     def get_logs(self) -> str:
         """Retrieve execution diagnostic logs."""
@@ -63,32 +64,52 @@ class EdgeClient(BaseEndpoint):
             typed_handler = cast(Callable[[], Coroutine[Any, Any, ExecutionResult]], handler)
             return await typed_handler()
         except Exception as e:
-            error_msg = f"edge execution crashed: {e}"
+            error_msg = f"firefox execution crashed: {e}"
             self._logs.append(error_msg)
             return ExecutionResult(completed=False, error=error_msg)
 
     async def start(self) -> None:
         """Initialize endpoint runtime."""
-        self._playwright = await async_playwright().start()
-        self._browser = await self._playwright.chromium.launch(channel="msedge", headless=True)
+
+        def _launch() -> webdriver.Firefox:
+            options = FirefoxOptions()
+            options.add_argument("--headless")
+            return webdriver.Firefox(options=options)
+
+        self._browser = await asyncio.to_thread(_launch)
 
     async def stop(self) -> None:
         """Terminate endpoint resources."""
         if self._browser:
-            await self._browser.close()
-        if self._playwright:
-            await self._playwright.stop()
+            await asyncio.to_thread(self._browser.quit)
 
     async def _execute_echo_scenario(self) -> ExecutionResult:
         """Execute bidirectional stream and datagram echo workload."""
-        page = await self._browser.new_page()
-        page.on(event="console", f=lambda msg: self._logs.append(f"js console: {msg.text}"))
+        if not self._browser:
+            return ExecutionResult(completed=False, error="browser not started")
 
-        await page.route(url="http://localhost/wt-secure-context", handler=lambda route: route.fulfill(body="OK"))
-        await page.goto(url="http://localhost/wt-secure-context")
+        async def handle_request(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+            data = await reader.read(1024)
+            if b"GET /wt-secure-context" in data:
+                writer.write(
+                    (
+                        "HTTP/1.1 200 OK\r\n"
+                        "Content-Type: text/html\r\n"
+                        "Content-Length: 2\r\n"
+                        "Access-Control-Allow-Origin: *\r\n\r\nOK"
+                    ).encode()
+                )
+            await writer.drain()
+            writer.close()
+
+        server = await asyncio.start_server(handle_request, "127.0.0.1", 0)
+        port = server.sockets[0].getsockname()[1]
+
+        await asyncio.to_thread(self._browser.get, f"http://127.0.0.1:{port}/wt-secure-context")
 
         js_payload = f"""
-        async () => {{
+        const callback = arguments[arguments.length - 1];
+        (async () => {{
             try {{
                 const url = "{self._target_url}/echo";
                 const wt = new WebTransport(url);
@@ -97,7 +118,7 @@ class EdgeClient(BaseEndpoint):
                 const stream = await wt.createBidirectionalStream();
                 const writer = stream.writable.getWriter();
                 const encoder = new TextEncoder();
-                await writer.write(encoder.encode("Hello, Edge!"));
+                await writer.write(encoder.encode("Hello, Firefox!"));
                 await writer.close();
 
                 const reader = stream.readable.getReader();
@@ -105,24 +126,25 @@ class EdgeClient(BaseEndpoint):
                 const decoder = new TextDecoder();
                 const response = decoder.decode(value);
 
-                if (response !== "Hello, Edge!") {{
+                if (response !== "Hello, Firefox!") {{
                     throw new Error("stream mismatch: " + response);
                 }}
 
                 await wt.close();
-                return "SUCCESS";
+                callback("SUCCESS");
             }} catch (e) {{
-                return e.message;
+                callback(e.message);
             }}
-        }}
+        }})();
         """
 
         try:
-            result = await page.evaluate(expression=js_payload)
+            result = await asyncio.to_thread(self._browser.execute_async_script, js_payload)
             if result == "SUCCESS":
                 return ExecutionResult(completed=True)
             return ExecutionResult(completed=False, error=str(result))
         except Exception as e:
-            return ExecutionResult(completed=False, error=f"playwright evaluation failed: {e}")
+            return ExecutionResult(completed=False, error=f"selenium evaluation failed: {e}")
         finally:
-            await page.close()
+            server.close()
+            await server.wait_closed()

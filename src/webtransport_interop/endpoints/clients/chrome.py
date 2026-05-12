@@ -49,13 +49,13 @@ class ChromeClient(BaseEndpoint):
         """Execute scenario workload."""
         self._logs.clear()
         if not self._browser:
-            return ExecutionResult(completed=False, error="Browser not started.")
+            return ExecutionResult(completed=False, error="browser not started")
 
         method_name = f"_execute_{name}_scenario"
         handler = getattr(self, method_name, None)
 
         if not handler:
-            error_msg = f"Unsupported scenario: {name}"
+            error_msg = f"unsupported scenario: {name}"
             self._logs.append(error_msg)
             return ExecutionResult(completed=False, error=error_msg)
 
@@ -63,7 +63,7 @@ class ChromeClient(BaseEndpoint):
             typed_handler = cast(Callable[[], Coroutine[Any, Any, ExecutionResult]], handler)
             return await typed_handler()
         except Exception as e:
-            error_msg = f"Chrome execution crashed: {e}"
+            error_msg = f"chrome execution crashed: {e}"
             self._logs.append(error_msg)
             return ExecutionResult(completed=False, error=error_msg)
 
@@ -82,42 +82,47 @@ class ChromeClient(BaseEndpoint):
     async def _execute_echo_scenario(self) -> ExecutionResult:
         """Execute bidirectional stream and datagram echo workload."""
         page = await self._browser.new_page()
-        page.on(event="console", f=lambda msg: self._logs.append(f"JS Console: {msg.text}"))
+        page.on(event="console", f=lambda msg: self._logs.append(f"js console: {msg.text}"))
 
         await page.route(url="http://localhost/wt-secure-context", handler=lambda route: route.fulfill(body="OK"))
         await page.goto(url="http://localhost/wt-secure-context")
 
         js_payload = f"""
         async () => {{
-            const url = "{self._target_url}/echo";
-            const wt = new WebTransport(url);
-            await wt.ready;
+            try {{
+                const url = "{self._target_url}/echo";
+                const wt = new WebTransport(url);
+                await wt.ready;
 
-            const stream = await wt.createBidirectionalStream();
-            const writer = stream.writable.getWriter();
-            const encoder = new TextEncoder();
-            await writer.write(encoder.encode("Hello, Chrome!"));
-            await writer.close();
+                const stream = await wt.createBidirectionalStream();
+                const writer = stream.writable.getWriter();
+                const encoder = new TextEncoder();
+                await writer.write(encoder.encode("Hello, Chrome!"));
+                await writer.close();
 
-            const reader = stream.readable.getReader();
-            const {{ value }} = await reader.read();
-            const decoder = new TextDecoder();
-            const response = decoder.decode(value);
+                const reader = stream.readable.getReader();
+                const {{ value }} = await reader.read();
+                const decoder = new TextDecoder();
+                const response = decoder.decode(value);
 
-            if (response !== "Hello, Chrome!") {{
-                throw new Error("Stream mismatch: " + response);
+                if (response !== "Hello, Chrome!") {{
+                    throw new Error("stream mismatch: " + response);
+                }}
+
+                await wt.close();
+                return "SUCCESS";
+            }} catch (e) {{
+                return e.message;
             }}
-
-            await wt.close();
-            return "SUCCESS";
         }}
         """
+
         try:
             result = await page.evaluate(expression=js_payload)
             if result == "SUCCESS":
                 return ExecutionResult(completed=True)
             return ExecutionResult(completed=False, error=str(result))
         except Exception as e:
-            return ExecutionResult(completed=False, error=f"JS Execution Error: {e}")
+            return ExecutionResult(completed=False, error=f"playwright evaluation failed: {e}")
         finally:
             await page.close()

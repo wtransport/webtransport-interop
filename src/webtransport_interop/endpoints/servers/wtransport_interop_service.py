@@ -40,7 +40,7 @@ class WTransportInteropServiceServer(BaseEndpoint):
 
     def get_logs(self) -> str:
         """Retrieve execution diagnostic logs."""
-        return "Remote instance: logs unavailable."
+        return "remote instance: logs unavailable"
 
     async def run_scenario(self, *, name: str) -> ExecutionResult:
         """Execute scenario workload."""

@@ -2,6 +2,7 @@ const MATRIX_CONFIG = {
   endpoints: {
     chrome: "Chrome",
     edge: "Edge",
+    firefox: "Firefox",
     pywebtransport: "PyWebTransport",
     wtransport_interop_service: "WTransport Interoperability Service",
   },

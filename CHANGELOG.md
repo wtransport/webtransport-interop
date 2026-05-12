@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _(No planned changes for the next release yet.)_
 
+## [0.2.0] - 2026-05-12
+
+### Added
+
+- **Endpoint Registry**: Integrated Mozilla Firefox as a client endpoint, utilizing Selenium WebDriver to execute against stable browser binaries.
+- **Automated Provisioning**: Added the `selenium` package to project dependencies to support dynamic environment provisioning for WebDriver-based endpoints.
+
+### Changed
+
+- **Endpoint Registry**: Refactored Chrome and Edge execution handlers to catch JavaScript promise rejections natively, enabling direct propagation of protocol-level exceptions.
+- **Visualization Layer**: Integrated Firefox identity mappings into the frontend registry and condensed vertical spacing metrics to maintain optimal information density.
+
 ## [0.1.1] - 2026-05-10
 
 ### Changed
@@ -41,6 +53,7 @@ This is the initial release of WebTransport Interop. It establishes a determinis
   - Configured GitLab CI for multi-stage static analysis (linting, typing) and repository synchronization.
 - **Engineering Standards**: Established full compliance with Python 3.12+ strict typing, Conventional Commits, and Developer Certificate of Origin (DCO) requirements.
 
-[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/wtransport/webtransport-interop/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/wtransport/webtransport-interop/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/wtransport/webtransport-interop/releases/tag/v0.1.0
