@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import os
+import sys
 from collections.abc import Callable, Coroutine
 from typing import Any, cast
 
@@ -74,6 +76,8 @@ class FirefoxClient(BaseEndpoint):
         def _launch() -> webdriver.Firefox:
             options = FirefoxOptions()
             options.add_argument("--headless")
+            options.binary_location = os.path.join(sys.prefix, "bin", "firefox")
+
             return webdriver.Firefox(options=options)
 
         self._browser = await asyncio.to_thread(_launch)
@@ -88,7 +92,7 @@ class FirefoxClient(BaseEndpoint):
         if not self._browser:
             return ExecutionResult(completed=False, error="browser not started")
 
-        async def handle_request(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        async def handle_request(*, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
             data = await reader.read(1024)
             if b"GET /wt-secure-context" in data:
                 writer.write(
@@ -102,7 +106,9 @@ class FirefoxClient(BaseEndpoint):
             await writer.drain()
             writer.close()
 
-        server = await asyncio.start_server(handle_request, "127.0.0.1", 0)
+        server = await asyncio.start_server(
+            client_connected_cb=lambda r, w: handle_request(reader=r, writer=w), host="127.0.0.1", port=0
+        )
         port = server.sockets[0].getsockname()[1]
 
         await asyncio.to_thread(self._browser.get, f"http://127.0.0.1:{port}/wt-secure-context")

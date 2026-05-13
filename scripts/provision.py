@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
+import sys
 
 from selenium.webdriver.common.selenium_manager import SeleniumManager
 
@@ -23,7 +25,16 @@ def provision_browsers() -> None:
         subprocess.run(cmd, check=True)
 
     if "firefox" in CLIENT_REGISTRY:
-        SeleniumManager().binary_paths(["--browser", "firefox"])
+        binary_metadata = SeleniumManager().binary_paths(["--browser", "firefox", "--force-browser-download"])
+
+        browser_path = binary_metadata.get("browser_path")
+        if browser_path:
+            target_link = os.path.join(sys.prefix, "bin", "firefox")
+
+            if os.path.lexists(target_link):
+                os.remove(target_link)
+
+            os.symlink(browser_path, target_link)
 
 
 if __name__ == "__main__":

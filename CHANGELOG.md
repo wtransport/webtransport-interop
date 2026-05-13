@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _(No planned changes for the next release yet.)_
 
+## [0.2.1] - 2026-05-13
+
+### Changed
+
+- **Automated Provisioning**: Enforced deterministic Firefox binary resolution by symlinking the SeleniumManager download to the virtual environment execution path.
+- **Endpoint Registry**: Explicitly bound the Firefox client driver to the provisioned virtual environment binary to prevent arbitrary host system resolution.
+
 ## [0.2.0] - 2026-05-12
 
 ### Added
@@ -53,7 +60,8 @@ This is the initial release of WebTransport Interop. It establishes a determinis
   - Configured GitLab CI for multi-stage static analysis (linting, typing) and repository synchronization.
 - **Engineering Standards**: Established full compliance with Python 3.12+ strict typing, Conventional Commits, and Developer Certificate of Origin (DCO) requirements.
 
-[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/wtransport/webtransport-interop/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/wtransport/webtransport-interop/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/wtransport/webtransport-interop/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/wtransport/webtransport-interop/releases/tag/v0.1.0
