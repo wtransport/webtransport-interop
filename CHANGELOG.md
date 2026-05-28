@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _(No planned changes for the next release yet.)_
 
+## [0.3.0] - 2026-05-28
+
+### Changed
+
+- **Execution Environment**: Elevated the minimum Python runtime constraint from `>=3.12` to `>=3.14` across all project manifests and static analysis toolchains.
+- **Core Dependencies**: Bumped the `pywebtransport` protocol engine requirement to `>=0.18.0,<1.0.0` to maintain upstream interface compatibility and execution baseline alignment.
+- **CI Infrastructure**: Synchronized runner images with the `3.14` baseline, enforced non-interactive system provisioning to prevent deadlocks, and implemented job-scoped pip cache keys to eliminate race conditions during concurrent matrix execution.
+
 ## [0.2.1] - 2026-05-13
 
 ### Changed
@@ -60,7 +68,8 @@ This is the initial release of WebTransport Interop. It establishes a determinis
   - Configured GitLab CI for multi-stage static analysis (linting, typing) and repository synchronization.
 - **Engineering Standards**: Established full compliance with Python 3.12+ strict typing, Conventional Commits, and Developer Certificate of Origin (DCO) requirements.
 
-[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/wtransport/webtransport-interop/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/wtransport/webtransport-interop/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/wtransport/webtransport-interop/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/wtransport/webtransport-interop/compare/v0.1.0...v0.1.1

@@ -9,15 +9,17 @@ default:
     - wtransport
 
 variables:
+  DEBIAN_FRONTEND: "noninteractive"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PIP_NO_COLOR: "1"
   PIP_ROOT_USER_ACTION: "ignore"
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
 lint:
   stage: lint
-  image: python:3.12-slim-bookworm
+  image: python:3.14-slim-trixie
   cache:
+    key: "$CI_JOB_NAME_SLUG"
     paths:
       - .cache/pip
   before_script:
@@ -35,7 +37,7 @@ lint:
 
 deploy-github:
   stage: deploy
-  image: python:3.12-slim-bookworm
+  image: python:3.14-slim-trixie
   variables:
     GIT_DEPTH: 0
   cache: []
@@ -45,7 +47,7 @@ deploy-github:
     - sed -i -e "s|http://deb.debian.org/debian-security|$APT_SECURITY_PROXY_URL|g" -e "s|http://deb.debian.org/debian|$APT_PROXY_URL|g" /etc/apt/sources.list.d/debian.sources
     - apt-get update && apt-get install -y git gnupg
     - export GPG_TTY=$(tty)
-    - gpg --batch --import "$GPG_PRIVATE_KEY"
+    - gpg --batch --import "$GITHUB_GPG_PRIVATE_KEY"
     - 'git config user.signingkey $(gpg --list-secret-keys --with-colons | grep "^sec:" | cut -d: -f5 | head -n1)'
     - git config commit.gpgsign true
   script:
@@ -53,13 +55,13 @@ deploy-github:
     - REMOTE_TAGS=$(git ls-remote --tags origin) || exit 1
     - |
       if echo "$REMOTE_TAGS" | grep -q "refs/tags/v$VERSION"; then
-        echo "Version v$VERSION already released - skipping"
+        echo "version v$VERSION already released - skipping"
         exit 0
       fi
     - git config user.name "WTransport Bot"
     - git config user.email "251935624+wtransport-bot@users.noreply.github.com"
     - git tag -s -m "Release v$VERSION" "v$VERSION"
-    - git push "https://oauth2:$GITLAB_DEPLOY_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git" "v$VERSION"
+    - git push "https://oauth2:$GITLAB_TOKEN@$CI_SERVER_HOST/$CI_PROJECT_PATH.git" "v$VERSION"
     - git push "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git" $CI_COMMIT_SHA:refs/heads/$CI_COMMIT_BRANCH
     - git push "https://$GITHUB_TOKEN@github.com/wtransport/webtransport-interop.git" --tags
   rules:

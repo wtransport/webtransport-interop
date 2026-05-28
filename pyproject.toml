@@ -4,12 +4,12 @@ requires = ["hatchling>=1.29.0,<2.0.0"]
 
 [project]
 name = "webtransport-interop"
-version = "0.2.1"
+version = "0.3.0"
 description = "An automated interoperability and conformance harness for WebTransport."
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 authors = [{ name = "The WTransport Authors", email = "admin@wtransport.org" }]
 keywords = [
     "conformance",
@@ -28,8 +28,6 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Communications",
@@ -41,18 +39,18 @@ classifiers = [
 ]
 dependencies = [
     "docker>=7.1.0,<8.0.0",
-    "playwright>=1.59.0,<2.0.0",
-    "pywebtransport>=0.17.1,<0.18.0",
-    "selenium>=4.43.0,<5.0.0",
+    "playwright>=1.60.0,<2.0.0",
+    "pywebtransport>=0.18.0,<1.0.0",
+    "selenium>=4.44.0,<5.0.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "black>=26.3.1,<27.0.0",
+    "black>=26.5.1,<27.0.0",
     "flake8>=7.3.0,<8.0.0",
     "isort>=8.0.1,<9.0.0",
-    "mypy>=2.0.0,<3.0.0",
-    "types-docker>=7.1.0.20260508,<8.0.0",
+    "mypy>=2.1.0,<3.0.0",
+    "types-docker>=7.1.0.20260518,<8.0.0",
 ]
 
 [project.urls]
@@ -64,7 +62,7 @@ Repository = "https://github.com/wtransport/webtransport-interop.git"
 
 [tool.black]
 line-length = 120
-target-version = ["py312"]
+target-version = ["py314"]
 
 [tool.isort]
 profile = "black"
@@ -73,7 +71,7 @@ known_first_party = ["webtransport_interop"]
 
 [tool.mypy]
 mypy_path = "src"
-python_version = "3.12"
+python_version = "3.14"
 show_error_codes = true
 strict = true
 warn_no_return = true
