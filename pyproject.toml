@@ -4,7 +4,7 @@ requires = ["hatchling>=1.29.0,<2.0.0"]
 
 [project]
 name = "webtransport-interop"
-version = "0.3.0"
+version = "0.3.1"
 description = "An automated interoperability and conformance harness for WebTransport."
 readme = "README.md"
 license = "Apache-2.0"

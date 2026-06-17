@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _(No planned changes for the next release yet.)_
 
+## [0.3.1] - 2026-06-17
+
+### Changed
+
+- **Endpoint Registry**: Integrated synchronous container image fetching into the server initialization sequence to enforce remote baseline synchronization.
+- **CI Infrastructure**: Transitioned pipeline orchestration to Directed Acyclic Graph (DAG) scheduling, localized environment variables to explicit job scopes, and terminated implicit artifact propagation.
+
 ## [0.3.0] - 2026-05-28
 
 ### Changed
@@ -68,7 +75,8 @@ This is the initial release of WebTransport Interop. It establishes a determinis
   - Configured GitLab CI for multi-stage static analysis (linting, typing) and repository synchronization.
 - **Engineering Standards**: Established full compliance with Python 3.12+ strict typing, Conventional Commits, and Developer Certificate of Origin (DCO) requirements.
 
-[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/wtransport/webtransport-interop/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/wtransport/webtransport-interop/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/wtransport/webtransport-interop/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/wtransport/webtransport-interop/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/wtransport/webtransport-interop/compare/v0.1.1...v0.2.0

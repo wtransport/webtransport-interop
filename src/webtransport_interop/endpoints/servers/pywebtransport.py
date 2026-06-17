@@ -53,6 +53,7 @@ class PyWebTransportServer(BaseEndpoint):
 
     async def start(self) -> None:
         """Initialize endpoint runtime."""
+        self._docker.images.pull(PyWebTransportConfig.IMAGE)
         self._container = self._docker.containers.run(
             image=PyWebTransportConfig.IMAGE,
             detach=True,
